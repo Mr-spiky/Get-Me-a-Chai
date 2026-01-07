@@ -1,6 +1,4 @@
 "use server"
-
-import Razorpay from "razorpay";
 import Payment from "@/models/Payment";
 import connectDB from "@/db/connectDb";
 import User from "@/models/User";
@@ -8,6 +6,9 @@ import User from "@/models/User";
 
 export const initiate = async (amount, to_username, paymentform) => {
     try {
+        // Import Razorpay only when needed to avoid bundling it
+        // into routes/actions that don't require it (Edge-incompatible)
+        const Razorpay = (await import("razorpay")).default;
         await connectDB();
 
         // Validate inputs
