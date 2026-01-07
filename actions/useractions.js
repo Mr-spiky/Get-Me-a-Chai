@@ -60,30 +60,42 @@ export const initiate = async (amount, to_username, paymentform) => {
 
 
 export const fetchuser = async (username) => {
-    await connectDB();
-    let u = await User.findOne({ username: username }).lean();
-    if (!u) return null;
+    try {
+        await connectDB();
+        let u = await User.findOne({ username: username }).lean();
+        if (!u) return null;
 
-    // Convert ObjectId to string for serialization
-    return {
-        ...u,
-        _id: u._id.toString()
-    };
+        // Convert ObjectId to string for serialization
+        return {
+            ...u,
+            _id: u._id.toString()
+        };
+    } catch (error) {
+        console.error("❌ Error in fetchuser:", error);
+        console.error("❌ Username:", username);
+        console.error("❌ MongoDB URI exists:", !!process.env.MONGODB_URI);
+        throw error;
+    }
 }
 
 export const fetchpayments = async (username) => {
-    await connectDB();
-    // Find all completed payments sorted by amount in descending order
-    let payments = await Payment.find({ to_user: username, done: true })
-        .sort({ amount: -1 })
-        .limit(10)
-        .lean();
+    try {
+        await connectDB();
+        // Find all completed payments sorted by amount in descending order
+        let payments = await Payment.find({ to_user: username, done: true })
+            .sort({ amount: -1 })
+            .limit(10)
+            .lean();
 
-    // Convert ObjectIds to strings for serialization
-    return payments.map(payment => ({
-        ...payment,
-        _id: payment._id.toString()
-    }));
+        // Convert ObjectIds to strings for serialization
+        return payments.map(payment => ({
+            ...payment,
+            _id: payment._id.toString()
+        }));
+    } catch (error) {
+        console.error("❌ Error in fetchpayments:", error);
+        return [];
+    }
 }
 
 export const updateProfile = async (data, oldusername) => {
