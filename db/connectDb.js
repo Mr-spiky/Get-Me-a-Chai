@@ -9,14 +9,15 @@ const connectDB = async () => {
       return;
     }
 
-    const mongoURI = process.env.MONGODB_URI || `mongodb://localhost:27017/chai`;
-    console.log(`🔗 Connecting to MongoDB...`);
-    console.log(`📍 URI: ${mongoURI}`);
+    const mongoURI = process.env.MONGODB_URI;
+    
+    if (!mongoURI) {
+      throw new Error("MONGODB_URI is not defined in environment variables");
+    }
 
-    const conn = await mongoose.connect(mongoURI, {
-      useNewUrlParser: true,
-      useUnifiedTopology: true,
-    });
+    console.log(`🔗 Connecting to MongoDB Atlas...`);
+
+    const conn = await mongoose.connect(mongoURI);
     
     console.log(`✅ MongoDB Connected: ${conn.connection.host}`);
     console.log(`📊 Database Name: ${conn.connection.name}`);
