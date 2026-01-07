@@ -101,27 +101,34 @@ export const fetchpayments = async (username) => {
 
 export const updateProfile = async (data, oldusername) => {
     await connectDB();
-    
-    //If the the username is being changed, check if the new username already exists
-    if (oldusername !== data.username) {
-        let updatedUser = await User.findOne({ username: data.username });
-        if (updatedUser) {
+
+    // Normalize inputs
+    const newUsername = (data.username || '').trim();
+    const currentUsername = (oldusername || '').trim();
+    const email = (data.email || '').trim().toLowerCase();
+
+    // If the username is being changed, ensure the new username isn't taken by another user
+    if (currentUsername && newUsername && currentUsername !== newUsername) {
+        const existing = await User.findOne({ username: newUsername }).lean();
+        if (existing && existing.email !== email) {
             return { error: "Username already exists" };
         }
-        
-        // Update all payments with the new username
-        await Payment.updateMany(
-            { to_user: oldusername },
-            { $set: { to_user: data.username } }
-        );
-        console.log("✅ Updated payments for username change:", oldusername, "->", data.username);
     }
 
-    // Extract only allowed fields to prevent updating immutable fields like _id, __v
+    // Update payments if username changed
+    if (currentUsername && newUsername && currentUsername !== newUsername) {
+        await Payment.updateMany(
+            { to_user: currentUsername },
+            { $set: { to_user: newUsername } }
+        );
+        console.log("✅ Updated payments for username change:", currentUsername, "->", newUsername);
+    }
+
+    // Prepare upsert data (create if not exists)
     const updateData = {
         name: data.name,
-        email: data.email,
-        username: data.username,
+        email: email,
+        username: newUsername,
         profilePic: data.profilePic,
         coverPic: data.coverPic,
         razorpayId: data.razorpayId,
@@ -130,11 +137,16 @@ export const updateProfile = async (data, oldusername) => {
         updatedAt: new Date()
     };
 
-    await User.updateOne(
-        { username: oldusername }, 
-        { $set: updateData }
+    // Find the user by current username or email and update, creating if missing
+    const updated = await User.findOneAndUpdate(
+        { $or: [ { username: currentUsername }, { email } ] },
+        { 
+            $set: updateData,
+            $setOnInsert: { createdAt: new Date() }
+        },
+        { new: true, upsert: true }
     );
-    
-    console.log("✅ Profile updated successfully for:", oldusername);
-    return { success: true };
+
+    console.log("✅ Profile upserted for:", updated?.username, "(email:", updated?.email, ")");
+    return { success: true, user: { id: updated._id.toString(), username: updated.username, email: updated.email } };
 }
