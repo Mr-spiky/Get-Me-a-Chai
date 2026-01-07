@@ -3,6 +3,10 @@ import GitHubProvider from 'next-auth/providers/github'
 import connectDB from '@/db/connectDb';
 import User from '@/models/User';
 
+// Ensure this route runs on Node.js (not Edge) and is dynamic
+export const runtime = 'nodejs';
+export const dynamic = 'force-dynamic';
+
 const handler = NextAuth({
   providers: [
     GitHubProvider({
@@ -16,6 +20,8 @@ const handler = NextAuth({
     }),
   ],
   secret: process.env.NEXTAUTH_SECRET,
+  trustHost: true,
+  session: { strategy: 'jwt' },
   callbacks: {
     async signIn({ user, account, profile }) {
       if (account.provider === "github") {
