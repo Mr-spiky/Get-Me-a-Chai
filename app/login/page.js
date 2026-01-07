@@ -1,18 +1,23 @@
 "use client"
-import React from 'react'
+import React, { useEffect } from 'react'
 import { useSession, signIn, signOut } from "next-auth/react"
 import { useRouter } from 'next/navigation'
 
 const Login = () => {
-      const { data: session } = useSession();
-    if(session){
-       const router = useRouter();
-       router.push('/dashboard');
-    }
+    const { data: session, status } = useSession();
+    const router = useRouter();
+
+    useEffect(() => {
+        document.title = "Login - Get Me A Chai";
+        if (session && status === 'authenticated') {
+            router.push('/dashboard');
+        }
+    }, [session, status, router]);
+
     return (
         <>
             <div className='text-white mx-auto text-center py-20 '>
-                <h1 className='text-3xl font-bold'>Login to get your page</h1>
+                <h1 className='text-3xl font-bold'>Login to get Started</h1>
             </div>
             <div className="social-login">
                 <div className="flex flex-col gap-2 justify-center items-center p-10">

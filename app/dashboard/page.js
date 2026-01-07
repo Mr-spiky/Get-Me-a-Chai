@@ -1,22 +1,18 @@
 'use client'
-import React from 'react'
-import { useSession, signIn, signOut } from "next-auth/react"
-import { useRouter } from 'next/navigation'
+import Dashboardf from "@/component/Dashboardf"
 
 
 const Dashboard = () => {
-    const { data: session } = useSession();
-
-    if (!session) {
-        const router = useRouter();
-        router.push('/login');
-    }
+    // Dashboard page content goes here , user fill there Details , name , Email , username , Profile pic , Cover Picture , RazorPay Id , razorpay Secret , Bio , save
+    
+   
 
     return (
-        <div>
-            <h1>Dashboard</h1>
-        </div>
+        <>
+        <Dashboardf/>
+        </>
     )
 }
 
-export default Dashboard
+export default Dashboard;
+

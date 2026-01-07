@@ -1,2 +1,46 @@
 @import "tailwindcss";
 
+.inverImg{
+    filter: invert(0.16);
+}
+
+/* Smooth scrollbar for supporters list */
+.supporters-list {
+    scrollbar-width: thin;
+    scrollbar-color: rgba(251, 191, 36, 0.3) transparent;
+}
+
+.supporters-list::-webkit-scrollbar {
+    width: 6px;
+}
+
+.supporters-list::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.supporters-list::-webkit-scrollbar-thumb {
+    background: rgba(251, 191, 36, 0.3);
+    border-radius: 3px;
+}
+
+.supporters-list::-webkit-scrollbar-thumb:hover {
+    background: rgba(251, 191, 36, 0.5);
+}
+
+/* Line clamp utility */
+.line-clamp-2 {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+/* Focus ring enhancement */
+input:focus {
+    outline: none;
+}
+
+/* Smooth transitions */
+* {
+    transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+}

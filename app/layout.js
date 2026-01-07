@@ -3,6 +3,7 @@ import "./globals.css";
 import Navbar from "../component/Navbar";
 import Footer from "../component/Footer";
 import SessionWrapper from "../component/SessionWrapper";
+import ToastProvider from "../component/ToastProvider";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -23,14 +24,15 @@ export default function RootLayout({ children }) {
   return (
     <html lang="en">
       <body
-        className="bg-[#000000] bg-[radial-gradient(#ffffff33_1px,#00091d_1px)] bg-[size:20px_20px] text-white">
+        className={`${geistSans.variable} ${geistMono.variable} antialiased bg-[#000000] bg-[radial-gradient(#ffffff33_1px,#00091d_1px)] bg-[size:20px_20px] text-white`}>
         <SessionWrapper>
           <Navbar />
-          <div className="min-h-screen  bg-[#000000] bg-[radial-gradient(#ffffff33_1px,#00091d_1px)] bg-[size:20px_20px] text-white">
+          <div className="min-h-screen bg-[#000000] bg-[radial-gradient(#ffffff33_1px,#00091d_1px)] bg-[size:20px_20px] text-white">
             {children}
           </div>
           <Footer />
         </SessionWrapper>
+        <ToastProvider />
       </body>
     </html>
     
